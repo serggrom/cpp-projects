@@ -1,1 +1,1 @@
-pinrt("Hello world")
+print("Hello world")
