@@ -9,6 +9,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 {
 	cout << "Hello!\n";
+	cout << "Choose ports\n";
 	return 0;
 }
 
