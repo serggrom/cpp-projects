@@ -8,7 +8,8 @@ using namespace std;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	cout << "Hello world!";
+	cout << "Hello world!\n";
+	cout << "Choose Com port\n";
 	return 0;
 }
 
