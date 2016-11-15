@@ -61,7 +61,19 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	while (true)
 	{
-		char c = _getch();
+		char WriteBuffer[20];
+		fgets(WriteBuffer, 20, stdin);
+
+		for(int i = 0; i < sizeof(WriteBuffer); i++)
+		{
+			if (WriteBuffer[i] == '#')
+			{
+				cout << "End of sendind\n";
+				break;
+			}
+		}
+
+		/*char c = _getch();
 		printf("%c", c);
 
 		sg.Send(&c, sizeof(c));
@@ -70,6 +82,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			break;
 		}
+		*/
 
 		cout << "\nGet data from COM port every 0.01 sec.\n";
 
@@ -106,6 +119,6 @@ int _tmain(int argc, _TCHAR* argv[])
 
 
 	
-	_getch();
+	//_getch();
 }
 
