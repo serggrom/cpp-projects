@@ -15,3 +15,7 @@
 /stdafx.obj
 /vc110.idb
 /vc110.pdb
+*.write.1.tlog
+*.11104-cvtres.read.1.tlog
+*.11104-rc.read.1.tlog
+*.11104.read.1.tlog
