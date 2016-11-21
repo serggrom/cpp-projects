@@ -80,6 +80,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		sg.Send(&c, sizeof(c));
 
+		cout << "\n" << sizeof(c) << " bytes sended.\n";
+
 		if (c == '#')
 		{
 			break;
