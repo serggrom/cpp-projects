@@ -2,124 +2,192 @@
 //
 
 #include "stdafx.h"
-#include "../../std_lib_facilities.h"
-#include "SerialGate.h"
-#include <conio.h>
 #include <windows.h>
+#include <iostream>
+#include <assert.h>
+#include "ComPortConfig.h"
 
-int UserChoosePort = 0;
-int dwBytesRead = 0;
+using namespace std;
+
+static int TIMEOUT = 1000;
+
+
+TTY::TTY() {
+	m_Handle = INVALID_HANDLE_VALUE;
+}
+
+TTY::~TTY() {
+	Disconnect();
+}
+
+bool TTY::IsOK() const {
+	return m_Handle != INVALID_HANDLE_VALUE;
+}
+
+
+void TTY::Connect(const string& port, int baudrate) {
+
+	Disconnect();
+
+	m_Handle =
+		CreateFile(
+		port.c_str(),
+		GENERIC_READ | GENERIC_WRITE,
+		0,
+		NULL,
+		OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL);
+
+	if (m_Handle == INVALID_HANDLE_VALUE)
+	{
+		throw TTYException();
+	}
+
+	SetCommMask (m_Handle, EV_RXCHAR);
+	SetupComm (m_Handle, 1500, 1500);
+
+	COMMTIMEOUTS CommTimeOuts;
+	CommTimeOuts.ReadIntervalTimeout = 0xFFFFFFFF;
+	CommTimeOuts.ReadTotalTimeoutMultiplier = 0;
+	CommTimeOuts.ReadTotalTimeoutConstant = TIMEOUT;
+	CommTimeOuts.WriteTotalTimeoutMultiplier = 0;
+	CommTimeOuts.WriteTotalTimeoutConstant = TIMEOUT;
+
+
+	if (!SetCommTimeouts(m_Handle, &CommTimeOuts))
+	{
+		CloseHandle (m_Handle);
+			m_Handle = INVALID_HANDLE_VALUE;
+			throw TTYException();
+	}
+
+	DCB ComDCM;
+	memset (&ComDCM, 0, sizeof(ComDCM));
+	ComDCM.DCBlength = sizeof(DCB);
+	GetCommState(m_Handle, &ComDCM);
+	ComDCM.BaudRate = DWORD(baudrate);
+	ComDCM.ByteSize = 8;
+	ComDCM.Parity = NOPARITY;
+	ComDCM.StopBits = ONESTOPBIT;
+	ComDCM.fAbortOnError = TRUE;
+	ComDCM.fDtrControl = DTR_CONTROL_DISABLE;
+	ComDCM.fRtsControl = RTS_CONTROL_DISABLE;
+	ComDCM.fBinary = TRUE;
+	ComDCM.fParity = FALSE;
+	ComDCM.fInX = FALSE;
+	ComDCM.fOutX = FALSE;
+	ComDCM.XonChar = 0;
+	ComDCM.XoffChar = (unsigned char)0xFF;
+	ComDCM.fErrorChar = FALSE;
+	ComDCM.fNull = FALSE;
+	ComDCM.XonLim = 128;
+	ComDCM.XoffLim = 128;
+
+	if (!SetCommState (m_Handle, &ComDCM))
+	{
+		CloseHandle(m_Handle);
+		m_Handle = INVALID_HANDLE_VALUE;
+		throw TTYException();
+	}
+
+}
 
 
 
-int _tmain(int argc, _TCHAR* argv[])
-
+void TTY::Disconnect()
 {
-	cout << "Hello!\n";
-
-	cout << "Detect all COM ports in system\n";
-
-	SerialGate sg;
-
-	PortInfo pi;
-
-	sg.GetPortsInfo(&pi);
-
-	printf("Total COM ports: %d\n\n", pi.koll);
-	//cout << "Total COM ports: %d" << pi.koll << "\n";
-
-	for (int i = 0; i < pi.koll; i++)
+	if (m_Handle != INVALID_HANDLE_VALUE)
 	{
-		if (pi.p[i].Availbl == true)
-		{
-			printf("COM%d - free\n", pi.p[i].Id);
-			//cout << "COM" << pi.p[i].Id << " - free\n";
-		}
-		else 
-		{
-			printf("COM%d - inaccessible\n", pi.p[i].Id);
-			//cout << "COM" << pi.p[i].Id << " - inaccessible\n";
-		}
+		CloseHandle(m_Handle);
+		m_Handle = INVALID_HANDLE_VALUE;
 	}
 
-	cout << "Choose port from free ports\n";
-	cout << "Please, input port number like 1 or any number.\n";
-	cin >> UserChoosePort;
-	int rate = 9600;
-	bool Port = sg.Open(UserChoosePort, rate);
-	if (Port == false)
+}
+
+void TTY::Write (const vector<unsigned char>& data)
+{
+	if (m_Handle == INVALID_HANDLE_VALUE)
 	{
-		cout << "Open Error.\n";
-	}
-	else
-	{
-		cout << "Port open successfully\n";
-	}
-
-	cout << "Press key to send command to COM port\n";
-	cout << "Press '#' to exit\n";
-
-	while (true)
-	{
-		/*
-		char WriteBuffer[20];
-		fgets(WriteBuffer, 20, stdin);
-
-		for(int i = 0; i < sizeof(WriteBuffer); i++)
-		{
-			if (WriteBuffer[i] == '#')
-			{
-				cout << "End of sendind\n";
-				break;
-			}
-		}
-		*/
-
-		char c = _getch();
-		printf("%c", c);
-
-		sg.Send(&c, sizeof(c));
-
-		if (c == '#')
-		{
-			break;
-		}
-
-		cout << "\nGet data from COM port every 0.01 sec.\n";
-
-		bool terminate = false;
-		char ReadBuffer[20];
-
-
-		while(!terminate)
-		{
-			Sleep(10);
-			dwBytesRead = sg.Recv(ReadBuffer, sizeof(ReadBuffer));
-
-			for (int i = 0; i < dwBytesRead; i++)
-			{
-				printf("%c", ReadBuffer[i]);
-				if (ReadBuffer[i] == '#')
-				{
-					terminate = true;
-					break;
-				}
-			}
-		}
-
-
-
-
-		
+		throw TTYException();
 	}
 
 
+	DWORD feedback;
+	if (!WriteFile (m_Handle, &data[0], (DWORD)data.size(), &feedback, 0) || feedback !=
+		(DWORD)data.size())
+	{
+		CloseHandle(m_Handle);
+		m_Handle = INVALID_HANDLE_VALUE;
+		throw TTYException();
+
+	}
+
+}
+
+
+void TTY::Read (vector<unsigned char>& data)
+{
+	if(m_Handle == INVALID_HANDLE_VALUE)
+	{
+		throw TTYException();
+	}
+
+	DWORD begin = GetTickCount();
+	DWORD feedback = 0;
+
+	unsigned char* buf = &data[0];
+	DWORD len = (DWORD)data.size();
+
+	int attempts = 3;
+	while (len && (attempts || (GetTickCount() - begin ) < (DWORD)TIMEOUT/3))
+	{
+		if (attempts) attempts--;
+
+		if (!ReadFile(m_Handle, buf, len, &feedback, NULL))
+		{
+			CloseHandle(m_Handle);
+			m_Handle = INVALID_HANDLE_VALUE;
+			throw TTYException();
+		}
+
+		assert (feedback <= len);
+		len -= feedback;
+		buf += feedback;
+
+	}
+
+	if (len)
+	{
+		CloseHandle(m_Handle);
+		m_Handle = INVALID_HANDLE_VALUE;
+		throw TTYException() ;
+	}
+
+}
 
 
 
 
+int main(int argc, char argv[])
+{
+	TTY tty;
+	tty.Connect ("COM1", 9600);
 
-	
-	//_getch();
+	for (int i = 0; i < 1000; i++)
+	{
+		std::vector<unsigned char> the_vectsor;
+		the_vectsor.push_back(5);
+		tty.Read(the_vectsor);
+
+
+
+		std::cout << (char)(the_vectsor[0]);
+	}
+
+	system("PAUSE");
+	return EXIT_SUCCESS;
+
+
 }
 
