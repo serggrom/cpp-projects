@@ -1,5 +1,9 @@
 #include "../../std_lib_facilities.h"
 
+
+
+const char number = '8';
+
 int fact (int N)
 {
 	if (N<0)
@@ -85,7 +89,8 @@ Token Token_stream::get()
 			cin.putback(ch);
 			double val;
 			cin >> val;
-			return Token ('8',val);
+			//return Token ('8',val);
+			return Token (number,val);
 		}
 	default:
 		error("Bad token\n");
@@ -122,7 +127,7 @@ double primary()
 			}
 			return d;
 		}
-	case '8':
+	case number:
 		return t.value;
 	case '-':
 		return - primary();
@@ -164,12 +169,22 @@ double term()
 			}
 		case '%':
 			{
+				
 				double d = primary();
 				if (d == 0)
 				{
-					error("% divide by zero!\n");
+					error("%: divide by zero!\n");
 				}
 				left = fmod(left, d);
+				/*
+				int i1 = narrow_cast<int>(left);
+				int i2 = narrow_cast<int>(primary());
+				if (i2 == 0) 
+				{
+					error("%: divide by zero\n");
+				}
+				left = i1 % i2;
+				*/
 				t = ts.get();
 				break;
 			}
