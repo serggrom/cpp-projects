@@ -1,8 +1,71 @@
+/*
+Эта программа реализует основные выражения калькулятора.
+
+Ввод о существляется из потока cin ; вывод - в поток cout .
+
+Грамматика для ввода :
+
+
+Инструкция :
+	Выражение
+	Вывод
+	Выход
+
+Вывод : 
+=
+
+Выход :
+=
+
+
+Выражение :
+	Терм
+	Выражение + Терм
+	Выражение - Терм
+
+Терм:
+	Первичное_выражение
+	Терм * Первичное_выражение
+	Терм / Первичное_выражение
+	Терм % Первичное_ выражение
+	
+Первичное_выражение :
+	Число
+	Выражение )
+	- Первичное_выражение
+	+ Первичное_выражение
+
+Число :
+	Литерал_с_плавающей_ то чкой
+
+	
+	
+Ввод из потока cin через Token_stream с именем ts.
+
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
 #include "../../std_lib_facilities.h"
 
 
 
+
 const char number = '8';
+const char qiut = 'x';
+const char print = '=';
+const string prompt = "> ";
+const string result = "= ";
 
 int fact (int N)
 {
@@ -27,6 +90,7 @@ int fact (int N)
 }
 
 
+
 class Token {
 public:
 	char kind; 
@@ -43,6 +107,7 @@ public:
 	Token_stream();
 	Token get();
 	void putback (Token t);
+	void ignore (char c);
 private:
 	bool full;
 	Token buffer;
@@ -77,8 +142,8 @@ Token Token_stream::get()
 
 	switch (ch)
 	{
-	case 'x':
-	case '=':
+	case qiut:
+	case print:
 	case '{': case '}': case '(': case ')':
 	case '+': case '-': case '!': case '*': case '/': case '%':
 		return Token(ch);
@@ -94,6 +159,27 @@ Token Token_stream::get()
 		}
 	default:
 		error("Bad token\n");
+	}
+}
+
+void Token_stream::ignore(char c)
+{
+	//Проверяем буфер:
+	if (full && c == buffer.kind)
+	{
+		full = false;
+		return;
+	}
+	full = false;
+
+	//Проверяем входные данные:
+	char ch = 0;
+	while (cin >> ch)
+	{
+		if (ch == c)
+		{
+			return;
+		}
 	}
 }
 
@@ -224,6 +310,164 @@ double expression()
 
 
 
+class Variable
+{
+public:
+	string name;
+	double value;
+	Variable();
+	~Variable();
+
+//private:
+
+};
+
+
+Variable::Variable()
+{
+}
+
+Variable::~Variable()
+{
+}
+
+vector <Variable> var_table;
+
+
+double get_value(string s)
+{
+	// Возвращает значение переменной с именем s
+	for (const Variable& v : var_table)
+	{
+		if (v.name == s)
+		{
+			return v.value;
+		}
+	}
+	error("get: undefined variable ", s);
+}
+
+
+void set_value(string s, double d)
+{
+	// Присваивает объекту s типа Variable значение d
+	for (Variable& v : var_table)
+	{
+		if (v.name == s)
+		{
+			v.value = d;
+			return;
+		}
+	}
+	error("set: undefined variable ", s);
+}
+
+bool is_declared(string var)
+	// Есть ли переменная var в векторе var_table?
+{
+	for (const Variable& v: var_table)
+	{
+		if (v.name == var)
+		{
+			return true;
+		}
+	}
+}
+
+
+double define_name(string var, double val)
+	// Добавляем пару (var, val) в вектор var_table
+{
+	if (is_declared(var))
+	{
+		error(var, " повторное объявление\n");
+	}
+	var_table.push_back(Variable(var, val));
+	return val;
+}
+
+
+double declaration()
+{
+
+}
+
+double statement()
+{
+	Token t = ts.get();
+	switch (t.kind)
+	{
+	case let:
+		return declaration();
+	default:
+		ts.putback(t);
+		return expression();
+	}
+}
+
+
+
+ void clean_up_mess()
+ {
+	 ts.ignore(print);
+	 /* first example of function
+	 while (true)
+	 {
+		 Token t = ts.get();
+		 if (t.kind == print)
+		 {
+			 return;
+		 }
+	 }
+	 */
+ }
+
+ void calculate()
+ {
+	double val = 0;
+		while (cin)
+		{
+			try
+			{
+				cout << prompt;
+				Token t = ts.get();
+				/*
+				while (t.kind == ';')
+				{
+					t = ts.get();
+				}
+				if (t.kind == 'q')
+				{
+					keep_window_open();
+					return 0;
+				}
+				ts.putback(t);
+				cout << '=' << expression() << '\n';
+				*/
+			
+				if (t.kind == qiut)
+				{
+					cout << result << val << "\n";
+					break;
+				}
+				if (t.kind == print)
+				{
+					cout << result << val << "\n";
+				}
+				else 
+				{
+					ts.putback(t);
+				}
+				val = expression();
+			}
+			catch (exception& e)
+			{
+				cerr << e.what() << "\n";
+				clean_up_mess();
+			}
+		}
+ }
+
 
 
 int main()
@@ -233,40 +477,7 @@ int main()
 		cout << "Welcome to the calculator programm!"
 			 << " You can input numbers with floating point.\n"
 			 << "For print results press '='. For exit press 'x'.\n";
-		double val = 0;
-		while (cin)
-		{
-			cout << "> ";
-			Token t = ts.get();
-			/*
-			while (t.kind == ';')
-			{
-				t = ts.get();
-			}
-			if (t.kind == 'q')
-			{
-				keep_window_open();
-				return 0;
-			}
-			ts.putback(t);
-			cout << '=' << expression() << '\n';
-			*/
-			
-			if (t.kind == 'x')
-			{
-				cout << "= " << val << "\n";
-				break;
-			}
-			if (t.kind == '=')
-			{
-				cout << "= " << val << "\n";
-			}
-			else 
-			{
-				ts.putback(t);
-			}
-			val = expression();
-		}
+		calculate();
 		keep_window_open();
 		return 0;
 		
@@ -283,6 +494,7 @@ int main()
 				return 1;
 			}
 	}
+	
 	catch (...)
 	{
 		cerr << "exception\n";
