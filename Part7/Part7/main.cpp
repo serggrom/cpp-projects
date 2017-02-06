@@ -63,9 +63,14 @@
 
 const char number = '8';
 const char qiut = 'x';
-const char print = '=';
+const char print = ';';
+const char name = 'a';
+const char let = 'L';
+
 const string prompt = "> ";
 const string result = "= ";
+const string delckey = "let";
+
 
 int fact (int N)
 {
@@ -95,10 +100,12 @@ class Token {
 public:
 	char kind; 
 	double value;
+	string name;
 	Token (char ch)
 		:kind(ch), value(0) { }
 	Token (char ch, double val)
 		:kind(ch), value(val) { }
+	Token (char ch, string n):kind(ch), name(n) { }
 };
 
 class Token_stream
@@ -158,6 +165,23 @@ Token Token_stream::get()
 			return Token (number,val);
 		}
 	default:
+		if (isalpha(ch))
+		{
+			cin.putback(ch);
+			string s;
+			s += ch;
+			//cin >> s;
+			while (cin.get(ch) && (isalpha(ch) || isdigit(ch)))
+			{
+				s += ch;
+			}
+			cin.putback(ch);
+			if (s == delckey)
+			{
+				return Token(let);
+			}
+			return Token(name,s);
+		}
 		error("Bad token\n");
 	}
 }
@@ -315,14 +339,16 @@ class Variable
 public:
 	string name;
 	double value;
-	Variable();
-	~Variable();
+	Variable(string n, double v) :name(n), value(v) {}
+	
+	//Variable();
+	//~Variable();
 
 //private:
 
 };
 
-
+/*
 Variable::Variable()
 {
 }
@@ -330,7 +356,7 @@ Variable::Variable()
 Variable::~Variable()
 {
 }
-
+*/
 vector <Variable> var_table;
 
 
@@ -389,7 +415,23 @@ double define_name(string var, double val)
 
 double declaration()
 {
+	Token t = ts.get();
+	if (t.kind != name)
+	{
+		error("Declaration expect name of variable\n");
+	}
+	string var_name = t.name;
 
+	Token t2 = ts.get();
+	if (t2.kind != '=')
+	{
+		error("Missing symbol = in declaration", var_name);
+	}
+
+	double d = expression();
+	//define_name(var_name, d);
+	var_table.push_back(Variable(var_name, d));
+	return d;
 }
 
 double statement()
@@ -474,9 +516,13 @@ int main()
 {
 	try
 	{
+		//define_name("pi", 3.1415926535);
+		//define_name("e", 2.7182818284);
+
+
 		cout << "Welcome to the calculator programm!"
 			 << " You can input numbers with floating point.\n"
-			 << "For print results press '='. For exit press 'x'.\n";
+			 << "For print results press ';'. For exit press 'x'.\n";
 		calculate();
 		keep_window_open();
 		return 0;
