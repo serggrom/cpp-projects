@@ -94,6 +94,18 @@ int fact (int N)
 	}
 }
 
+double my_sqrt(double n)
+{
+	if (n<0)
+	{
+		error("input number must be positive");
+	}
+	else
+	{
+		return sqrt(n);
+	}
+}
+
 
 
 class Token {
@@ -152,7 +164,8 @@ Token Token_stream::get()
 	case qiut:
 	case print:
 	case '{': case '}': case '(': case ')':
-	case '+': case '-': case '!': case '*': case '/': case '%':
+	case '+': case '-': case '!': case '*': case '/': case '$':
+	case '@':
 		return Token(ch);
 	case '.':
 	case '0': case '1': case '2': case '3': case '4':
@@ -261,6 +274,10 @@ double term()
 			f = left;
 			left = fact(f);
 			t = ts.get();
+			break;
+		case '$':
+			f = left;
+			left = my_sqrt(f);
 			break;
 		case '*':
 			left *= primary();
@@ -469,6 +486,7 @@ double statement()
 	double val = 0;
 		while (cin)
 		{
+			cout << prompt;
 			try
 			{
 				cout << prompt;
