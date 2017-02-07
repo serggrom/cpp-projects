@@ -74,8 +74,8 @@ Token Token_stream::get()
 			s += ch;
 			while(cin.get(ch) && (isalpha(ch) || isdigit(ch))) s=ch;
 			cin.unget();
-			//if (s == "let") return Token(let);	
-			//if (s == "quit") return Token(name);
+			if (s == "let") return Token(let);	
+			if (s == "quit") return Token(name);
 			return Token(name,s);
 		}
 		error("Bad token");
