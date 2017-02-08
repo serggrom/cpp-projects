@@ -486,7 +486,6 @@ double statement()
 	double val = 0;
 		while (cin)
 		{
-			cout << prompt;
 			try
 			{
 				cout << prompt;
