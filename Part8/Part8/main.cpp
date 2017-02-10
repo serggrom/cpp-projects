@@ -226,7 +226,7 @@ int maxv (vector<int>& v)
 	return max;
 }
 
-void properties_of_vector(vector<double> v)
+void properties_of_vector(vector<double>& v)
 {
 	double max = v[0];
 	for(int i = 0; i < v.size(); ++i)
