@@ -2,7 +2,7 @@
 
 vector<string> month_tbl;
 
-
+/*
 struct Date
 {
 	int y;
@@ -12,7 +12,7 @@ struct Date
 
 	void add_day(int n);
 };
-
+*/
 
 class Year 
 {
@@ -87,16 +87,18 @@ class Date
 public:
 	Date(Year y, Month m, int d);
 	void add_day(int n);
+	void add_month(int n);
+	void add_year(int n);
 	class Invalid { };
-	Month month()
+	Month month() const
 	{
 		return m;
 	}
-	int day()
+	int day() const
 	{
 		return d;
 	}
-	Year year()
+	Year year() const
 	{
 		return y;
 	}
@@ -104,11 +106,26 @@ public:
 	~Date();
 
 private:
-	Year y;
+	Year y ;
 	Month m;
-	int d;
+	int d ;
 	bool is_valid();
 };
+
+
+Date::Date()
+	:y(default_date().year),
+	 m(default_date().month), 
+	 d(default_date().day)
+{
+}
+
+
+const Date& default_date()
+{
+	static Date dd(2001, Month::Jan, 1);
+	return dd;
+}
 
 Date::Date(Year yy, Month mm, int dd)
 	:y(yy), m(mm), d(dd)
@@ -119,6 +136,7 @@ Date::Date(Year yy, Month mm, int dd)
 	}
 }
 
+/*
 bool Date::is_valid()
 {
 	if (m == 2)
@@ -140,12 +158,14 @@ bool Date::is_valid()
 		return false;
 	}
 }
+*/
 
 void Date::add_day(int n)
 {
 
 }
 
+/*
 int Date::year()
 {
 	return y;
@@ -160,12 +180,14 @@ int Date::day()
 {
 	return d;
 }
+*/
+
 
 Date::~Date()
 {
 }
 
-
+/*
 void f (int x, int y)
 {
 	try 
@@ -179,7 +201,7 @@ void f (int x, int y)
 		error("Wrong date");
 	}
 }
-
+*/
 
 
 class X
@@ -224,6 +246,7 @@ void add_day(Date& dd, int y, int m, int d)
 
 int main()
 {
+	/*
 	X var;
 	var.m = 7;
 	int x = var.mf(9);
@@ -231,7 +254,14 @@ int main()
 	today.y = 2017;
 	today.m = 02;
 	today.d = 13;
+	*/
+
 
 	Month m = Month::Feb;
 
+	Date d (2000, Month::Jan, 1);
+	const Date cd (2001, Month::Jan, 2);
+	cout << d.day() << "—" << cd.day() << endl;
+	d.add_day(1);
+	//.add_day(1);
 }
