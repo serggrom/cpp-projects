@@ -2,18 +2,82 @@
 
 vector<string> month_tbl;
 
-/*
+/*9.4.1
 struct Date
 {
 	int y;
 	int m;
 	int d;
-	Date(int y, int m, int d);
+	//Date(int y, int m, int d);
+	void init_day(Date& dd, int y, int m, int d);
+	void add_day(Date& dd, int n);
+};
+*/
 
+/*9.4.1
+struct Date
+{
+	int y, m, d;
+	Date(int y, int m, int d);
+	
 	void add_day(int n);
 };
 */
 
+/*9.4.3
+class Date
+{
+	int y, m, d;
+public:
+	Date(int y, int m, int d);
+	void add_day(int n);
+	int month()
+	{
+		return m;
+	}
+	int day()
+	{
+		return d;
+	}
+	int year()
+	{
+		return y;
+	}
+};
+*/
+
+
+enum class Month 
+{
+	Jan = 1, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
+};
+
+class Date
+{
+public:
+	Date(int y, Month m, int d);
+	void add_day(int n);
+	int year()
+	{
+		return y;
+	}
+	Month month()
+	{
+		return m;
+	}
+	int day()
+	{
+		return n;
+	}
+private:
+	int y;
+	Month m;
+	int n;
+};
+
+
+
+/*
 class Year 
 {
 	static const int min = 1800;
@@ -40,6 +104,8 @@ enum class Month
 {
 	Jan = 1, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
 };
+*/
+
 
 /*
 enum Month_simplify 
@@ -48,6 +114,8 @@ enum Month_simplify
 };
 */
 
+
+/*
 Month int_to_month(int x)
 {
 	if (x < int(Month::Jan) || int(Month::Dec) < x)
@@ -160,10 +228,12 @@ bool Date::is_valid()
 }
 */
 
+/*
 void Date::add_day(int n)
 {
 
 }
+*/
 
 /*
 int Date::year()
@@ -182,10 +252,11 @@ int Date::day()
 }
 */
 
-
+/*
 Date::~Date()
 {
 }
+*/
 
 /*
 void f (int x, int y)
@@ -230,19 +301,170 @@ X::~X()
 }
 
 
-
+//9.4.1
+/*
 void init_day(Date& dd, int y, int m, int d)
 {
-
+    if (d < 1 || d > 31)
+	{
+		error("Wrong day!");
+	}
+	else
+	{
+		dd.d = d;
+	}
+	if (m < 1 || m > 12)
+	{
+		error("Wrong month");
+	}
+	else
+	{
+		dd.m = m;
+	}
+	if (y < 1800 || y > 2200)
+	{
+		error("Wrong year");
+	}
+	else
+	{
+		dd.y = y;
+	}	
 }
 
 
-void add_day(Date& dd, int y, int m, int d)
+void add_day(Date& dd,int n)
+{
+	
+	if (dd.m == 12 && dd.d == 31)
+	{
+		dd.y++;
+		dd.m = 1;
+		dd.d = 1;
+	}
+	if (dd.d == 31)
+	{
+		dd.m++;
+		dd.d = 1;
+	}
+	else
+	{
+	
+		dd.d = dd.d +  n;
+	}
+}
+*/
+
+/*9.4.2
+Date::Date(int y0, int m0, int d0)
+{
+    if (d0 < 1 || d0 > 31)
+	{
+		error("Wrong day!");
+	}
+	else
+	{
+		d = d0;
+	}
+	if (m0 < 1 || m0 > 12)
+	{
+		error("Wrong month");
+	}
+	else
+	{
+		m = m0;
+	}
+	if (y0 < 1800 || y0 > 2200)
+	{
+		error("Wrong year");
+	}
+	else
+	{
+		y = y0;
+	}
+}
+
+void Date::add_day(int n)
+{	
+	if (m == 12 && d == 31)
+	{
+		y++;
+		m = 1;
+		d = 1;
+	}
+	if (d == 31)
+	{
+		m++;
+		d = 1;
+	}
+	else
+	{
+	
+		d = d + n;
+	}
+}
+*/
+
+/*9.4.3
+Date::Date(int y0, int m0, int d0)
+{
+    if (d0 < 1 || d0 > 31)
+	{
+		error("Wrong day!");
+	}
+	else
+	{
+		d = d0;
+	}
+	if (m0 < 1 || m0 > 12)
+	{
+		error("Wrong month");
+	}
+	else
+	{
+		m = m0;
+	}
+	if (y0 < 1800 || y0 > 2200)
+	{
+		error("Wrong year");
+	}
+	else
+	{
+		y = y0;
+	}
+}
+
+void Date::add_day(int n)
+{
+	if (m == 12 && d == 31)
+	{
+		y++;
+		m = 1;
+		d = 1;
+	}
+	if (d == 31)
+	{
+		m++;
+		d = 1;
+	}
+	else
+	{
+	
+		d = d + n;
+	}
+}
+*/
+
+Date::Date(int y, Month m, int d)
 {
 
 }
 
-
+ostream& operator<<(ostream& os, Date& dd)
+{
+	return os << '(' << dd.year()
+		      << ',' << int(dd.month())
+              << ',' << dd.day() << ')';
+}
 
 int main()
 {
@@ -256,12 +478,61 @@ int main()
 	today.d = 13;
 	*/
 
-
+	/*
 	Month m = Month::Feb;
 
 	Date d (2000, Month::Jan, 1);
 	const Date cd (2001, Month::Jan, 2);
 	cout << d.day() << "—" << cd.day() << endl;
 	d.add_day(1);
+	*/
 	//.add_day(1);
+
+	/*9.4.1
+	try
+	{
+		Date today;
+		init_day(today, 1963, 5, -19);
+		Date tomorrow = today;
+		add_day(tomorrow, 1);
+		cout << today;
+		cout << tomorrow;
+	}
+	catch(exception& e)
+	{
+		cerr << "exception: " << e.what() << endl;
+	}
+	*/
+	/*9.4.2
+	try
+	{
+		Date today(1963, 5, 21);
+		Date tomorrow = today;
+		tomorrow.add_day(1);
+		cout << today << endl;
+		cout << tomorrow << endl;
+	}
+	catch(exception& e)
+	{
+		cerr << "exception: " << e.what() << endl;
+	}
+	*/
+
+	/*9.4.3
+	try
+	{
+		Date today(1963, 5, 21);
+		Date tomorrow = today;
+		tomorrow.add_day(1);
+		cout << today << endl;
+		cout << tomorrow << endl;
+	}
+	catch(exception& e)
+	{
+		cerr << "exception: " << e.what() << endl;
+	}
+	*/
+
+
+
 }
