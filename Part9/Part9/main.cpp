@@ -46,7 +46,7 @@ public:
 };
 */
 
-
+/*9.7.1
 enum class Month 
 {
 	Jan = 1, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
@@ -67,15 +67,291 @@ public:
 	}
 	int day()
 	{
-		return n;
+		return d;
 	}
 private:
 	int y;
 	Month m;
-	int n;
+	int d;
+};
+*/
+
+/*9.7.4
+enum class Month 
+{
+	Jan = 1, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
 };
 
 
+class Date
+{
+public:
+	Date(int y, Month m, int d);
+	int day() const
+	{
+		return d;
+	}
+	Month month() const
+	{
+		return m;
+	}
+	int year() const
+	{
+		return y;
+	}
+
+	void add_day(int n);
+private:
+	int y;
+	Month m;
+	int d;
+};
+*/
+
+
+class Name_pairs
+{
+public:
+	void read_names();
+	void read_ages();
+	void print();
+	void my_sort();
+	vector<string> nms()
+	{
+		return names;
+	}
+	vector<double> ags()
+	{
+		return ages;
+	}
+private:
+	vector<string> names;
+	vector<double> ages;
+};
+
+void Name_pairs::read_names()
+{
+	string name;
+	cout << "Input the names, if you want to end input 'exit'" << endl;
+	while (cin)
+	{
+		cin >> name;
+		if (!cin)
+		{
+			error("Unexpected chars");
+		}
+		if (name == "exit")
+		{
+			break;
+		}
+		names.push_back(name);
+	}
+}
+
+void Name_pairs::read_ages()
+{
+	double age;
+	for (int i = 0; i < names.size(); ++i)
+	{
+		cout << "What is a " << names[i] << " age?" << endl;
+		cin >> age;
+		ages.push_back(age);
+	}
+}
+
+
+void Name_pairs::print()
+{
+	if (names.size() != ages.size())
+	{
+		error("Missing one pair!");
+	}
+	for (int i = 0; i < names.size(); ++i)
+	{
+		cout << names[i] << " " << ages[i] << endl;
+	}
+
+}
+
+
+void Name_pairs::my_sort()
+{
+	if (names.size() != ages.size())
+	{
+		error("Missing one pair!");
+	}
+	vector<string> names_copy = names;
+	sort(names.begin(), names.end());
+	int k = names.size() / 2;
+	int n = names_copy.size() ;
+	for (int i = 0; i < k; ++i)
+	{
+		for (int j = 0; j < n; ++j)
+		{
+			if (names_copy[j] == names[i])
+			{
+				double temp = ages[i];
+				ages[i] = ages[j];
+				ages[j] = temp;
+			}
+		}
+	}
+}
+
+ostream& operator<<(ostream& os, Name_pairs& tbl)
+{
+	if (tbl.nms().size() != tbl.ags().size())
+	{
+		error("Missing one pair!");
+	}
+	for (int i = 0; i < tbl.nms().size(); ++i)
+	{
+		cout << "Name: " << tbl.nms()[i] << " "
+		      << "Age: " << tbl.ags() [i]<< endl;
+	}
+	return os;
+}
+
+bool operator==(Name_pairs& tbls, Name_pairs& tbl)
+{
+	if (tbls.nms().size() != tbls.ags().size())
+	{
+		error("Missing one pair!");
+	}
+	if (tbl.nms().size() != tbl.ags().size())
+	{
+		error("Missing one pair!");
+	}
+	if (tbls.nms().size() != tbl.ags().size())
+	{
+		error("Missing one pair!");
+	}
+	for (int i = 0; i < tbls.nms().size(); ++i)
+	{
+		if (tbls.nms()[i] == tbl.nms()[i] && tbls.ags()[i] == tbl.ags()[i])
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+}
+
+
+bool operator!=(Name_pairs& tbls, Name_pairs& tbl)
+{
+	return !(tbls == tbl);
+}
+
+
+
+class Book
+{
+public:
+	bool find_book();
+	void add_books();
+private:
+	vector<char> ISBN;
+	vector<string> Title;
+	vector<string> Last_Name;
+	vector<string> First_Name;
+	vector<bool> where_is_book();
+};
+
+void Book::add_books()
+{
+	while (true)
+	{
+		cout << "Input info about books in the database:" << endl;
+		int isbn_max = 7;
+		int counter = 0;
+		cout << "Input the ISBN number: " << endl;
+		while (counter < isbn_max)
+		{
+			if (counter == 1 || counter == 3 || counter == 5)
+			{
+				ISBN.push_back('-');
+			}
+			else if (counter == 7)
+			{
+				char n;
+				if (!cin)
+				{
+					error("Unexpected chars");
+				}
+				cin >> n;
+				switch (n)
+				{
+				case '0': case '1': case '2': case '3': 
+				case '4': case '5': case '6': case '7':
+				case '8': case '9':
+					ISBN.push_back(n);
+					break;
+				}
+			}
+			char n;
+			if (!cin)
+			{
+				error("Unexpected chars");
+			}
+			cin >> n;
+			switch (n)
+			{
+			case '0': case '1': case '2': case '3': 
+			case '4': case '5': case '6': case '7':
+			case '8': case '9': case 'a': case 'b':
+			case 'c': case 'd': case 'e': case 'f':
+			case 'g': case 'h':
+				ISBN.push_back(n);
+				break;
+			}
+			char x;
+			++counter;
+		}
+		cout << "Input the title of book: " << endl;
+		string bk_ttl;
+		cin >> bk_ttl;
+		if (!cin)
+		{
+			error("Unexpected chars");
+		}
+		Title.push_back(bk_ttl);
+
+		cout << "Input the Author First Name: " << endl;
+		string Name;
+		cin >> Name;
+		if (!cin)
+		{
+			error("Unexpected chars");
+		}
+		First_Name.push_back(Name);
+
+		cout << "Input the Author Last Name: " << endl;
+		string Name;
+		cin >> Name;
+		if (!cin)
+		{
+			error("Unexpected chars");
+		}
+		Last_Name.push_back(Name);
+
+		cout << "Are are you want to add one book yet? Y/N: " << endl;
+		string ans;
+		cin >> ans;
+		if (!cin)
+		{
+			error("Unexpected chars");
+		}
+		if (ans == "N")
+		{
+			break;
+		}
+	}
+
+
+}
 
 /*
 class Year 
@@ -454,17 +730,128 @@ void Date::add_day(int n)
 }
 */
 
-Date::Date(int y, Month m, int d)
+/*9.7.1
+Date::Date(int y0, Month m0, int d0)
 {
-
+	if (d0 < 1 || d0 > 31)
+	{
+		error("Wrong day!");
+	}
+	else
+	{
+		d = d0;
+	}
+	if (m0 < Month::Jan || m0 > Month::Dec)
+	{
+		error("Wrong month");
+	}
+	else
+	{
+		m = m0;
+	}
+	if (y0 < 1800 || y0 > 2200)
+	{
+		error("Wrong year");
+	}
+	else
+	{
+		y = y0;
+	}
 }
 
+Month operator++(Month& m)
+{
+	m = (m == Month::Dec) ? Month::Jan : Month(int(m)+1);
+	return m;
+}
+
+
+void Date::add_day(int n)
+{
+	if (m == Month::Dec && d == 31)
+	{
+		y++;
+		m = Month::Jan;
+		d = 1;
+	}
+	if (d == 31)
+	{
+		m++;
+		d = 1;
+	}
+	else
+	{
+	
+		d = d + n;
+	}
+}
+*/
+
+/*9.7.4
+Date::Date(int y0, Month m0, int d0)
+{
+	if (d0 < 1 || d0 > 31)
+	{
+		error("Wrong day!");
+	}
+	else
+	{
+		d = d0;
+	}
+	if (m0 < Month::Jan || m0 > Month::Dec)
+	{
+		error("Wrong month");
+	}
+	else
+	{
+		m = m0;
+	}
+	if (y0 < 1800 || y0 > 2200)
+	{
+		error("Wrong year");
+	}
+	else
+	{
+		y = y0;
+	}
+}
+
+Month operator++(Month& m)
+{
+	m = (m == Month::Dec) ? Month::Jan : Month(int(m)+1);
+	return m;
+}
+
+
+void Date::add_day(int n)
+{
+	if (m == Month::Dec && d == 31)
+	{
+		y++;
+		m = Month::Jan;
+		d = 1;
+	}
+	if (d == 31)
+	{
+		m++;
+		d = 1;
+	}
+	else
+	{
+	
+		d = d + n;
+	}
+}
+*/
+
+/*
 ostream& operator<<(ostream& os, Date& dd)
 {
 	return os << '(' << dd.year()
 		      << ',' << int(dd.month())
               << ',' << dd.day() << ')';
 }
+*/
 
 int main()
 {
@@ -532,6 +919,54 @@ int main()
 		cerr << "exception: " << e.what() << endl;
 	}
 	*/
+
+
+	/*9.7.1
+	try
+	{
+		Date today(1963, Month::May, 21);
+		Date tomorrow = today;
+		tomorrow.add_day(1);
+		cout << today << endl;
+		cout << tomorrow << endl;
+	}
+	catch(exception& e)
+	{
+		cerr << "exception: " << e.what() << endl;
+	}
+	*/
+
+	/*9.7.4
+	try
+	{
+		Date today(1963, Month::May, 31);
+		Date tomorrow = today;
+		tomorrow.add_day(1);
+		cout << today << endl;
+		cout << tomorrow << endl;
+	}
+	catch(exception& e)
+	{
+		cerr << "exception: " << e.what() << endl;
+	}
+	*/
+
+	/*
+	try
+	{
+		Name_pairs table;
+		table.read_names();
+		table.read_ages();
+		cout << table;
+		//table.print();
+		table.my_sort();
+		cout << table;
+		//table.print();
+	}
+	catch(exception& e)
+	{
+		cerr << "exception: " << e.what() << endl;
+	}*/
 
 
 
