@@ -247,96 +247,98 @@ bool operator!=(Name_pairs& tbls, Name_pairs& tbl)
 
 
 
+
+struct ISBN
+{
+	int n1;
+	int n2;
+	int n3;
+	char x;
+	ISBN();
+	ISBN (int n1, int n2, int n3, char x);
+	void input_isbn();
+};
+
+
 class Book
 {
 public:
-	bool find_book();
-	void add_books();
+	Book();
+	Book(ISBN isbn, string title, string last_name, string first_name, 
+		bool book_check)
+	{
+		ISBNum = isbn;
+		Title = title;
+		Last_Name = last_name;
+		First_Name = first_name;
+		where_is_book = book_check;
+	};
+	void find_book();
+	void add_book();
+	//ISBN ISBN;
 private:
-	vector<char> ISBN;
-	vector<string> Title;
-	vector<string> Last_Name;
-	vector<string> First_Name;
-	vector<bool> where_is_book();
+	ISBN ISBNum;
+	string Title;
+	string Last_Name;
+	string First_Name;
+	bool where_is_book;
 };
 
-void Book::add_books()
+void ISBN::input_isbn()
 {
-	while (true)
+	cout << "Input the ISBN number: " << endl;
+	cin >> n1;
+	if (!cin)
 	{
-		cout << "Input info about books in the database:" << endl;
-		int isbn_max = 7;
-		int counter = 0;
-		cout << "Input the ISBN number: " << endl;
-		while (counter < isbn_max)
-		{
-			if (counter == 1 || counter == 3 || counter == 5)
-			{
-				ISBN.push_back('-');
-			}
-			else if (counter == 7)
-			{
-				char n;
-				if (!cin)
-				{
-					error("Unexpected chars");
-				}
-				cin >> n;
-				switch (n)
-				{
-				case '0': case '1': case '2': case '3': 
-				case '4': case '5': case '6': case '7':
-				case '8': case '9':
-					ISBN.push_back(n);
-					break;
-				}
-			}
-			char n;
-			if (!cin)
-			{
-				error("Unexpected chars");
-			}
-			cin >> n;
-			switch (n)
-			{
-			case '0': case '1': case '2': case '3': 
-			case '4': case '5': case '6': case '7':
-			case '8': case '9': case 'a': case 'b':
-			case 'c': case 'd': case 'e': case 'f':
-			case 'g': case 'h':
-				ISBN.push_back(n);
-				break;
-			}
-			char x;
-			++counter;
-		}
+		error("Unexpected chars");
+	}
+	cin >> n2;
+	if (!cin)
+	{
+		error("Unexpected chars");
+	}
+	cin >> n3;
+	if (!cin)
+	{
+		error("Unexpected chars");
+	}
+	cin >> x;
+	if (!cin)
+	{
+		error("Unexpected chars");
+	}
+
+}
+
+
+
+void Book::add_book()
+{
+
+		cout << "Input info about book in the database:" << endl;
+		
+
 		cout << "Input the title of book: " << endl;
-		string bk_ttl;
-		cin >> bk_ttl;
+		cin >> Title;
 		if (!cin)
 		{
 			error("Unexpected chars");
 		}
-		Title.push_back(bk_ttl);
 
 		cout << "Input the Author First Name: " << endl;
-		string Name;
-		cin >> Name;
+		cin >> First_Name;
 		if (!cin)
 		{
 			error("Unexpected chars");
 		}
-		First_Name.push_back(Name);
 
 		cout << "Input the Author Last Name: " << endl;
-		string Name;
-		cin >> Name;
+		cin >> Last_Name;
 		if (!cin)
 		{
 			error("Unexpected chars");
 		}
-		Last_Name.push_back(Name);
-
+		/*
 		cout << "Are are you want to add one book yet? Y/N: " << endl;
 		string ans;
 		cin >> ans;
@@ -346,12 +348,48 @@ void Book::add_books()
 		}
 		if (ans == "N")
 		{
-			break;
+		break;
 		}
-	}
+		*/
 
 
 }
+
+
+
+void Book::find_book()
+{
+	/*
+		cout << "Does " << ISBN << " " << Title 
+		     << "book in the library?(If answer is 'yes' input Y, if 'No' input N)"
+			 << endl;
+		char ans;
+		cin >> ans;
+		if ( !cin)
+		{
+			error("Unexpected chars");
+		}
+		if (ans == 'Y')
+		{
+			where_is_book = true;
+		}
+		else if (ans == 'N')
+		{
+			where_is_book = false;
+		}*/
+}
+
+
+
+bool operator==(Book& a, Book& b)
+{
+
+}
+
+
+
+
+
 
 /*
 class Year 
@@ -968,6 +1006,17 @@ int main()
 		cerr << "exception: " << e.what() << endl;
 	}*/
 
+
+	try
+	{
+		Book database;
+		database.add_book();
+		database.find_book();
+	}
+	catch(exception& e)
+	{
+		cerr << "exception: " << e.what() << endl;
+	}
 
 
 }
