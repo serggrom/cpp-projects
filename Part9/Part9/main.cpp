@@ -248,6 +248,12 @@ bool operator!=(Name_pairs& tbls, Name_pairs& tbl)
 
 
 
+
+
+
+class Book
+{
+public:
 struct ISBN
 {
 	int n1;
@@ -258,46 +264,69 @@ struct ISBN
 	ISBN (int n1, int n2, int n3, char x);
 	void input_isbn();
 };
-
-
-class Book
-{
-public:
+	enum Genre
+	{
+		none = 0, fiction, periodic, biography, child  
+	};
 	Book();
 	Book(ISBN isbn, string title, string last_name, string first_name, 
-		bool book_check)
-	{
-		ISBNum = isbn;
-		Title = title;
-		Last_Name = last_name;
-		First_Name = first_name;
-		where_is_book = book_check;
-	};
+		Genre genre, bool book_check);
 	void find_book();
 	void add_book();
-	//ISBN ISBN;
+	ISBN isbn()
+	{
+		return ISBNum;
+	}
+	string title()
+	{
+		return Title;
+	}
+	string last_name()
+	{
+		return Last_Name;
+	}
+	string first_name()
+	{
+		return First_Name;
+	}
 private:
 	ISBN ISBNum;
 	string Title;
 	string Last_Name;
 	string First_Name;
+	Genre genre;
 	bool where_is_book;
 };
 
-void ISBN::input_isbn()
+
+
+
+void Book::ISBN::input_isbn()
 {
 	cout << "Input the ISBN number: " << endl;
 	cin >> n1;
+	if (n1 < 0)
+	{
+		error("ISBN can't be less then 0");
+	}
 	if (!cin)
 	{
 		error("Unexpected chars");
 	}
 	cin >> n2;
+	if (n2 < 0)
+	{
+		error("ISBN can't be less then 0");
+	}
 	if (!cin)
 	{
 		error("Unexpected chars");
 	}
 	cin >> n3;
+	if (n3 < 0)
+	{
+		error("ISBN can't be less then 0");
+	}
 	if (!cin)
 	{
 		error("Unexpected chars");
@@ -311,13 +340,30 @@ void ISBN::input_isbn()
 }
 
 
+Book::Book(ISBN isbn0, string title0, string last_name0, string first_name0, 
+		Genre genre0, bool book_check0)
+{
+	if(isbn0.n1 < 0 || isbn0.n2 < 0 || isbn0.n3 < 0)
+	{
+		error("ISBN can't be less then 0");
+	}
+	ISBNum = isbn0;
+	Title = title0;
+	Last_Name = last_name0;
+	First_Name = first_name0;
+	genre = genre0;
+	where_is_book = book_check0;
+}
+
+
 
 void Book::add_book()
 {
-
-		cout << "Input info about book in the database:" << endl;
 		
-
+		cout << "Input info about book in the database:" << endl;
+		Book::ISBN A;
+		A.input_isbn;
+		ISBNum = A;
 		cout << "Input the title of book: " << endl;
 		cin >> Title;
 		if (!cin)
@@ -334,6 +380,15 @@ void Book::add_book()
 
 		cout << "Input the Author Last Name: " << endl;
 		cin >> Last_Name;
+		if (!cin)
+		{
+			error("Unexpected chars");
+		}
+
+		cout << "Input the book's Genre"
+			    "[none = 0, fiction = 1, periodic = 2, biography = 3, child = 4]: " << endl;
+		int genre0;
+		cin >> genre0;
 		if (!cin)
 		{
 			error("Unexpected chars");
@@ -359,32 +414,157 @@ void Book::add_book()
 
 void Book::find_book()
 {
-	/*
-		cout << "Does " << ISBN << " " << Title 
-		     << "book in the library?(If answer is 'yes' input Y, if 'No' input N)"
-			 << endl;
-		char ans;
-		cin >> ans;
-		if ( !cin)
-		{
-			error("Unexpected chars");
-		}
-		if (ans == 'Y')
-		{
-			where_is_book = true;
-		}
-		else if (ans == 'N')
-		{
-			where_is_book = false;
-		}*/
+	cout << "Does " << ISBNum.n1 << "-" << ISBNum.n2 << "-" << ISBNum.n3 << "-" << ISBNum.x 
+		 << " " << Title << " book in the library?(Input 'Yes' or 'No')?\n";
+	string ans;
+	cin >> ans;
+	if (!cin)
+	{
+		error("Unexpected chars");
+	}
+	if (ans == "Yes")
+	{
+		where_is_book = true;
+	}
+	else if (ans == "No")
+	{
+		where_is_book = false;
+	}
 }
 
 
 
 bool operator==(Book& a, Book& b)
 {
-
+	return (a.isbn().n1 == b.isbn.n1() && a.isbn().n2 == b.isbn().n2
+		&& a.isbn().n3 == b.isbn().n3 && a.isbn().x == b.isbn().x);
 }
+
+
+bool operator!=(Book& a, Book& b)
+{
+	return !(a == b);
+}
+
+
+ostream& operator<<(ostream& os, Book& a)
+{
+	return os << "Title:" << a.title() << "\n" 
+		      << "Author name: " << a.first_name() << " " << a.last_name() << "\n"
+			  << "ISBN: " << a.isbn().n1 << "-" << a.isbn().n2 << "-" << a.isbn().n3 << "-" << a.isbn().x << "\n";
+}
+
+
+class Patron
+{
+public:
+	Patron();
+	Patron(string name, int card_number, double pay, bool pay_compl);
+	string name()
+	{
+		return Name;
+	}
+	int card_number()
+	{
+		return Card_Number;
+	}
+	double pay()
+	{
+		return Pay;
+	}
+	bool pay_compl()
+	{
+		return Pay_Compl;
+	}
+	void check_pay();
+	void add_patron();
+private:
+	string Name;
+	int Card_Number;
+	double Pay;
+	bool Pay_Compl;
+};
+
+
+
+
+
+Patron::Patron(string name0, int card_number0, double pay0, bool pay_compl0)
+{
+	Name = name0;
+	if (card_number0 < 0)
+	{
+		error("Card number can't be less then 0");
+	}
+	Card_Number = card_number0;
+	if (pay0 < 0)
+	{
+		error("Pay can't be less then 0");
+	}
+	Pay = pay0;
+	Pay_Compl = pay_compl0;
+}
+
+
+
+void Patron::add_patron()
+{
+	cout << "Input info about patron.\n"
+		 << "Please, input patron name: ";
+	cin >> Name;
+    if (!cin)
+	{
+		error("Unexpected chars");
+	}
+	cout << "Please, input card number: ";
+	cin >> Card_Number;
+	if (!cin)
+	{
+		error("Unexpected chars");
+	}
+	cout << "Please, input fee: ";
+	cin >> Pay;
+	cout << "Please, input 'Yes', if fee was payed, or 'No' if fee not payed: ";
+	string check;
+	cin >> check;
+	if (!cin)
+	{
+		error("Unexpected chars");
+	}
+	if (check == "Yes")
+	{
+		Pay_Compl == true;
+	}
+	else if (check == "No")
+	{
+		Pay_Compl == false;
+	}
+}
+
+void Patron::check_pay()
+{
+	cout << "Was fee payed by patron " << Name << " ?";
+    cout << "Please, input 'Yes', if fee was payed, or 'No' if fee not payed: ";
+	string check;
+	cin >> check;
+	if (!cin)
+	{
+		error("Unexpected chars");
+	}
+	if (check == "Yes")
+	{
+		Pay_Compl == true;
+	}
+	else if (check == "No")
+	{
+		Pay_Compl == false;
+	}
+}
+
+
+
+
+
 
 
 
