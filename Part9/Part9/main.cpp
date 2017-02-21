@@ -1,4 +1,6 @@
 #include "../../std_lib_facilities.h"
+#include "Chrono.h"
+
 
 vector<string> month_tbl;
 
@@ -254,16 +256,16 @@ bool operator!=(Name_pairs& tbls, Name_pairs& tbl)
 class Book
 {
 public:
-struct ISBN
-{
-	int n1;
-	int n2;
-	int n3;
-	char x;
-	ISBN();
-	ISBN (int n1, int n2, int n3, char x);
-	void input_isbn();
-};
+	struct ISBN
+	{
+		int n1;
+		int n2;
+		int n3;
+		char x;
+		ISBN();
+		ISBN (int n1, int n2, int n3, char x);
+		void input_isbn();
+	};
 	enum Genre
 	{
 		none = 0, fiction, periodic, biography, child  
@@ -272,7 +274,7 @@ struct ISBN
 	Book(ISBN isbn, string title, string last_name, string first_name, 
 		Genre genre, bool book_check);
 	void find_book();
-	void add_book();
+	void input_book();
 	ISBN isbn()
 	{
 		return ISBNum;
@@ -355,14 +357,44 @@ Book::Book(ISBN isbn0, string title0, string last_name0, string first_name0,
 	where_is_book = book_check0;
 }
 
+const Book::ISBN& default_isbn()
+{
+	static const Book::ISBN number(0, 0, 0, '0');
+	return number;
+}
+
+Book::ISBN::ISBN()
+	:n1(default_isbn().n1),
+	n2(default_isbn().n1),
+	n3(default_isbn().n3),
+	x(default_isbn().x)
+{
+}
 
 
-void Book::add_book()
+const Book& default_book()
+{
+	static const Book bb (Book::ISBN(), "", "", "", Book::Genre::none, 0);
+	return bb;
+}
+
+Book::Book()
+	:ISBNum(default_book().ISBNum),
+	Title(default_book().Title),
+	Last_Name(default_book().Last_Name),
+	First_Name(default_book().First_Name),
+	genre(default_book().genre),
+	where_is_book(default_book().where_is_book)
+{
+}
+
+
+void Book::input_book()
 {
 		
 		cout << "Input info about book in the database:" << endl;
 		Book::ISBN A;
-		A.input_isbn;
+		A.input_isbn();
 		ISBNum = A;
 		cout << "Input the title of book: " << endl;
 		cin >> Title;
@@ -434,14 +466,14 @@ void Book::find_book()
 
 
 
-bool operator==(Book& a, Book& b)
+bool operator==(Book::ISBN& a, Book::ISBN& b)
 {
-	return (a.isbn().n1 == b.isbn.n1() && a.isbn().n2 == b.isbn().n2
-		&& a.isbn().n3 == b.isbn().n3 && a.isbn().x == b.isbn().x);
+	return a.n1 == b.n1 && a.n2 == b.n2
+		&& a.n3 == b.n3 && a.x == b.x;
 }
 
 
-bool operator!=(Book& a, Book& b)
+bool operator!=(Book::ISBN& a, Book::ISBN& b)
 {
 	return !(a == b);
 }
@@ -484,6 +516,21 @@ private:
 	double Pay;
 	bool Pay_Compl;
 };
+
+const Patron& default_patron()
+{
+	static const Patron pp ("", 0, 0, 0);
+	return pp;
+}
+
+
+Patron::Patron()
+	:Name(default_patron().Name),
+	Card_Number(default_patron().Card_Number),
+	Pay(default_patron().Pay),
+	Pay_Compl(default_patron().Pay_Compl)
+{
+}
 
 
 
@@ -539,6 +586,7 @@ void Patron::add_patron()
 	{
 		Pay_Compl == false;
 	}
+
 }
 
 void Patron::check_pay()
@@ -560,6 +608,46 @@ void Patron::check_pay()
 		Pay_Compl == false;
 	}
 }
+
+
+
+class Library
+{
+public:
+	struct Transaction
+	{
+		Book b;
+		Patron p;
+		Chrono::Date d;
+	};
+	void Patrons_With_Debts(vector<Patron>& lib_patrons);
+private:
+	vector<Book> lib_books;
+	vector<Patron> lib_patrons;
+	vector<Transaction> lib_transaction;
+	vector<string> patrons_with_debts;
+};
+
+
+void Library::Patrons_With_Debts(vector<Patron>& lib_patrons)
+{
+	for (int i = 0; i < lib_patrons.size(); ++i)
+	{
+		if (lib_patrons[i].pay_compl() == false)
+		{
+			cout << "Error: patron " << lib_patrons[i].name() << " did not pay fees!\n";
+			patrons_with_debts.push_back(lib_patrons[i].name());
+		}
+		else
+		{
+			Transaction A;
+			A.p = lib_patrons[i];
+			lib_transaction.push_back(A);
+		}
+	}
+}
+
+
 
 
 
@@ -1190,7 +1278,7 @@ int main()
 	try
 	{
 		Book database;
-		database.add_book();
+		database.input_book();
 		database.find_book();
 	}
 	catch(exception& e)
