@@ -248,66 +248,41 @@ bool operator!=(Name_pairs& tbls, Name_pairs& tbl)
 }
 
 
-
-
-
-
-
-class Book
+class ISBN2
 {
 public:
-	struct ISBN
+	ISBN2();
+	ISBN2 (int n1, int n2, int n3, char x);
+	void input_isbn2();
+	int x_1()
 	{
-		int n1;
-		int n2;
-		int n3;
-		char x;
-		ISBN();
-		ISBN (int n1, int n2, int n3, char x);
-		void input_isbn();
-	};
-	enum Genre
-	{
-		none = 0, fiction, periodic, biography, child  
-	};
-	Book();
-	Book(ISBN isbn, string title, string last_name, string first_name, 
-		Genre genre, bool book_check);
-	void find_book();
-	void input_book();
-	ISBN isbn()
-	{
-		return ISBNum;
+		return x1;
 	}
-	string title()
+	int x_2()
 	{
-		return Title;
+		return x2;
 	}
-	string last_name()
+	int x_3()
 	{
-		return Last_Name;
+		return x3;
 	}
-	string first_name()
+	char x_x()
 	{
-		return First_Name;
+		return x;
 	}
 private:
-	ISBN ISBNum;
-	string Title;
-	string Last_Name;
-	string First_Name;
-	Genre genre;
-	bool where_is_book;
+	int x1;
+	int x2;
+	int x3;
+	char x;
 };
 
 
-
-
-void Book::ISBN::input_isbn()
+void ISBN2::input_isbn2()
 {
 	cout << "Input the ISBN number: " << endl;
-	cin >> n1;
-	if (n1 < 0)
+	cin >> x1;
+	if (x1 < 0)
 	{
 		error("ISBN can't be less then 0");
 	}
@@ -315,8 +290,8 @@ void Book::ISBN::input_isbn()
 	{
 		error("Unexpected chars");
 	}
-	cin >> n2;
-	if (n2 < 0)
+	cin >> x2;
+	if (x2 < 0)
 	{
 		error("ISBN can't be less then 0");
 	}
@@ -324,8 +299,8 @@ void Book::ISBN::input_isbn()
 	{
 		error("Unexpected chars");
 	}
-	cin >> n3;
-	if (n3 < 0)
+	cin >> x3;
+	if (x3 < 0)
 	{
 		error("ISBN can't be less then 0");
 	}
@@ -342,10 +317,70 @@ void Book::ISBN::input_isbn()
 }
 
 
-Book::Book(ISBN isbn0, string title0, string last_name0, string first_name0, 
+ISBN2::ISBN2(int x1, int x2, int x3, char x)
+	:x1(x1), x2(x2), x3(x3), x(x)
+{
+}
+
+
+const ISBN2& default_isbn2()
+{
+	static const ISBN2 number(0, 0, 0, '0');
+	return number;
+}
+
+ISBN2::ISBN2()
+	:x1(default_isbn2().x1),
+	 x2(default_isbn2().x2),
+	 x3(default_isbn2().x3),
+	 x(default_isbn2().x)
+{
+}
+
+
+class Book
+{
+public:
+	enum Genre
+	{
+		none = 0, fiction, periodic, biography, child  
+	};
+	Book();
+	Book(ISBN2 isbn, string title, string last_name, string first_name, 
+		Genre genre, bool book_check);
+	void find_book();
+	void input_book();
+	ISBN2 isbn()
+	{
+		return ISBNum;
+	}
+	string title()
+	{
+		return Title;
+	}
+	string last_name()
+	{
+		return Last_Name;
+	}
+	string first_name()
+	{
+		return First_Name;
+	}
+private:
+	ISBN2 ISBNum;
+	string Title;
+	string Last_Name;
+	string First_Name;
+	Genre genre;
+	bool where_is_book;
+};
+
+
+/*
+Book::Book(ISBN2 isbn0, string title0, string last_name0, string first_name0, 
 		Genre genre0, bool book_check0)
 {
-	if(isbn0.n1 < 0 || isbn0.n2 < 0 || isbn0.n3 < 0)
+	if(isbn0.x_1() < 0 || isbn0.x_2() < 0 || isbn0.x_3() < 0)
 	{
 		error("ISBN can't be less then 0");
 	}
@@ -356,25 +391,18 @@ Book::Book(ISBN isbn0, string title0, string last_name0, string first_name0,
 	genre = genre0;
 	where_is_book = book_check0;
 }
+*/
 
-const Book::ISBN& default_isbn()
-{
-	static const Book::ISBN number(0, 0, 0, '0');
-	return number;
-}
-
-Book::ISBN::ISBN()
-	:n1(default_isbn().n1),
-	n2(default_isbn().n1),
-	n3(default_isbn().n3),
-	x(default_isbn().x)
+Book::Book(ISBN2 isbn0, string title0, string last_name0, string first_name0, 
+		Genre genre0, bool book_check0)
+		:ISBNum(isbn0), Title(title0), Last_Name(last_name0), First_Name(first_name0),
+		genre(genre0), where_is_book(book_check0)
 {
 }
-
 
 const Book& default_book()
 {
-	static const Book bb (Book::ISBN(), "", "", "", Book::Genre::none, 0);
+	static const Book bb (ISBN2::ISBN2(), "", "", "", Book::Genre::none, 0);
 	return bb;
 }
 
@@ -393,8 +421,8 @@ void Book::input_book()
 {
 		
 		cout << "Input info about book in the database:" << endl;
-		Book::ISBN A;
-		A.input_isbn();
+		ISBN2 A;
+		A.input_isbn2();
 		ISBNum = A;
 		cout << "Input the title of book: " << endl;
 		cin >> Title;
@@ -446,7 +474,7 @@ void Book::input_book()
 
 void Book::find_book()
 {
-	cout << "Does " << ISBNum.n1 << "-" << ISBNum.n2 << "-" << ISBNum.n3 << "-" << ISBNum.x 
+	cout << "Does " << ISBNum.x_1() << "-" << ISBNum.x_2() << "-" << ISBNum.x_3() << "-" << ISBNum.x_x() 
 		 << " " << Title << " book in the library?(Input 'Yes' or 'No')?\n";
 	string ans;
 	cin >> ans;
@@ -466,14 +494,14 @@ void Book::find_book()
 
 
 
-bool operator==(Book::ISBN& a, Book::ISBN& b)
+bool operator==(ISBN2& a, ISBN2& b)
 {
-	return a.n1 == b.n1 && a.n2 == b.n2
-		&& a.n3 == b.n3 && a.x == b.x;
+	return a.x_1() == b.x_1() && a.x_2() == b.x_2()
+		&& a.x_3() == b.x_3() && a.x_x() == b.x_x();
 }
 
 
-bool operator!=(Book::ISBN& a, Book::ISBN& b)
+bool operator!=(ISBN2& a, ISBN2& b)
 {
 	return !(a == b);
 }
@@ -483,7 +511,7 @@ ostream& operator<<(ostream& os, Book& a)
 {
 	return os << "Title:" << a.title() << "\n" 
 		      << "Author name: " << a.first_name() << " " << a.last_name() << "\n"
-			  << "ISBN: " << a.isbn().n1 << "-" << a.isbn().n2 << "-" << a.isbn().n3 << "-" << a.isbn().x << "\n";
+			  << "ISBN: " << a.isbn().x_1() << "-" << a.isbn().x_2() << "-" << a.isbn().x_3() << "-" << a.isbn().x_x() << "\n";
 }
 
 
@@ -646,7 +674,6 @@ void Library::Patrons_With_Debts(vector<Patron>& lib_patrons)
 		}
 	}
 }
-
 
 
 
