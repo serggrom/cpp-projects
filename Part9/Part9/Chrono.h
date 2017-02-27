@@ -46,7 +46,7 @@ private:
 };
 
 bool is_date(int y, Month m, int d);
-//bool leapyear(int y);
+bool leapyear(int y);
 bool operator==(const Date& a, const Date& b);
 bool operator!=(const Date& a, const Date& b);
 ostream& operator<< (ostream& os, const Date& d);

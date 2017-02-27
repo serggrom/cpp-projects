@@ -608,11 +608,11 @@ void Patron::add_patron()
 	}
 	if (check == "Yes")
 	{
-		Pay_Compl == true;
+		Pay_Compl = true;
 	}
 	else if (check == "No")
 	{
-		Pay_Compl == false;
+		Pay_Compl = false;
 	}
 
 }
@@ -629,11 +629,11 @@ void Patron::check_pay()
 	}
 	if (check == "Yes")
 	{
-		Pay_Compl == true;
+		Pay_Compl = true;
 	}
 	else if (check == "No")
 	{
-		Pay_Compl == false;
+		Pay_Compl = false;
 	}
 }
 
@@ -675,14 +675,114 @@ void Library::Patrons_With_Debts(vector<Patron>& lib_patrons)
 	}
 }
 
+enum Monthes
+{
+	Jan = 1, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
+};
+
+Monthes operator++(Monthes& m)
+{
+	if (m == Monthes::Dec)
+	{
+		m = Monthes::Jan;
+	}
+	else
+	{
+		Monthes(int(m)+1);
+	}
+	return m;
+}
+
+class Date_unix
+{
+public:
+	Date_unix(int y, Monthes m, int d);
+	Date_unix();
+	void convert_date_to_unix();
+	long int uni_days()
+	{
+		return unix_days;
+	}
+private:
+	long int unix_days;
+	int y;
+	Monthes m;
+	int d;
+};
 
 
 
+Date_unix::Date_unix(int y0, Monthes m0, int d0)
+	:y(y0), m(m0), d(d0)
+{
+	if (y < 1970 && d < 1)
+	{
+		error("Input wrong year or day, pls input positive numbers");
+	}
+}
 
 
+const Date_unix& default_date_unix()
+{
+	static const Date_unix dd_uu(1970, Monthes::Jan, 1);
+	return dd_uu;
+}
 
+Date_unix::Date_unix()
+	:y(default_date_unix().y),
+	m(default_date_unix().m),
+	d(default_date_unix().d)
+{
+	if (y < 1970 && d < 1)
+	{
+		error("Input wrong year or day, pls input positive numbers");
+	}
+}
 
+bool leapyear(int y)
+{
+	return (y % 4 == 0 && y % 100 != 0) || y % 400 == 0;
+}
 
+void Date_unix::convert_date_to_unix()
+{
+	unix_days = 0;
+	for (int y0 = 1970; y0 < y; ++y0)
+	{
+		if (leapyear(y))
+		{
+			unix_days += 366;
+		}
+		else
+		{
+			unix_days += 365;
+		}
+	}
+	/*
+	for (Monthes m0 = Monthes::Jan; m0 < m; ++m0)
+	{
+		switch (m0)
+		{
+		case Monthes::Jan: case Monthes::Mar: case Monthes::May: case Monthes::Jul: case Monthes::Aug: case Monthes::Oct: case Monthes::Dec:
+			int days_in_month0 = 31;
+			unix_days += days_in_month0;
+			break;
+		case Monthes::Feb:
+			int days_in_month1 = 28;
+			unix_days += days_in_month1;
+			break;
+		case Monthes::Apr: case Monthes::Jun: case Monthes::Sep: case Monthes::Nov:
+			int days_in_month2 = 30;
+			unix_days += days_in_month2;
+			break;
+		default:
+			break;
+		}
+	}
+	*/
+	unix_days += d;
+
+}
 
 
 
@@ -1301,7 +1401,7 @@ int main()
 		cerr << "exception: " << e.what() << endl;
 	}*/
 
-
+	/*
 	try
 	{
 		Book database;
@@ -1312,6 +1412,18 @@ int main()
 	{
 		cerr << "exception: " << e.what() << endl;
 	}
+	*/
 
+
+	try
+	{
+		Date_unix A(1972, Monthes::Jan, 1);
+		A.convert_date_to_unix();
+		cout << A.uni_days() << endl;
+	}
+	catch(exception& e)
+	{
+		cerr << "exception: " << e.what() << endl;
+	}
 
 }
