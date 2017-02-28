@@ -81,7 +81,7 @@ bool is_date(int y, Month m, int d)
 
 bool leapyear(int y)
 {
-	return (y % 0 == 0 && y % 100 != 0) || y % 400 == 0;
+	return (y % 4 == 0 && y % 100 != 0) || y % 400 == 0;
 }
 
 

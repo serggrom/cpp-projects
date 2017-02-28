@@ -675,7 +675,7 @@ void Library::Patrons_With_Debts(vector<Patron>& lib_patrons)
 	}
 }
 
-enum Monthes
+enum class Monthes
 {
 	Jan = 1, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
 };
@@ -688,7 +688,7 @@ Monthes operator++(Monthes& m)
 	}
 	else
 	{
-		Monthes(int(m)+1);
+		m = Monthes(int(m)+1);
 	}
 	return m;
 }
@@ -749,7 +749,7 @@ void Date_unix::convert_date_to_unix()
 	unix_days = 0;
 	for (int y0 = 1970; y0 < y; ++y0)
 	{
-		if (leapyear(y))
+		if (leapyear(y0))
 		{
 			unix_days += 366;
 		}
@@ -758,31 +758,182 @@ void Date_unix::convert_date_to_unix()
 			unix_days += 365;
 		}
 	}
-	/*
+	
 	for (Monthes m0 = Monthes::Jan; m0 < m; ++m0)
 	{
 		switch (m0)
 		{
-		case Monthes::Jan: case Monthes::Mar: case Monthes::May: case Monthes::Jul: case Monthes::Aug: case Monthes::Oct: case Monthes::Dec:
+		case Monthes::Jan:
+		case Monthes::Mar:
+		case Monthes::May:
+		case Monthes::Jul:
+		case Monthes::Aug:
+		case Monthes::Oct:
+		case Monthes::Dec:
+		{
 			int days_in_month0 = 31;
 			unix_days += days_in_month0;
 			break;
+		}
 		case Monthes::Feb:
+		{
 			int days_in_month1 = 28;
 			unix_days += days_in_month1;
 			break;
-		case Monthes::Apr: case Monthes::Jun: case Monthes::Sep: case Monthes::Nov:
+		}
+		case Monthes::Apr:
+		case Monthes::Jun:
+		case Monthes::Sep:
+		case Monthes::Nov:
+		{
 			int days_in_month2 = 30;
 			unix_days += days_in_month2;
 			break;
+		}
 		default:
+			cout << "No months\n";
 			break;
 		}
 	}
-	*/
+	
 	unix_days += d;
 
 }
+
+
+
+
+class Rational
+{
+public:
+	Rational();
+	Rational(int numerator, int denumerator);
+	void convert_to_dbl();
+	int gcd(int a, int b);// greatest common denumerator
+	void normalize();
+	int get_num()
+	{
+		return numerator;
+	}
+	int get_denum()
+	{
+		return denumerator;
+	}
+private:
+	int numerator;
+	int denumerator;
+};
+
+
+int Rational::gcd(int a, int b)
+{
+	while (b != 0) {
+        int t = b;
+        b = a%b;
+        a = t;
+    }
+    return a;
+}
+
+
+void Rational::normalize()
+{
+	if(denumerator == 0)
+	{
+		error("Denumerator can't be zero!");
+	}
+	if (denumerator < 0)
+	{
+		denumerator = - denumerator;
+		numerator = - numerator;
+	}
+	int n = gcd(numerator, denumerator);
+	if (n > 1)
+	{
+		numerator /=n;
+		denumerator /= n;
+	}
+}
+
+
+Rational::Rational()
+	:numerator(0), denumerator(1)
+{
+
+}
+
+
+Rational::Rational(int numerator0, int denumerator0)
+	:numerator(numerator0), denumerator(denumerator0)
+{
+	normalize();
+}
+
+
+Rational operator+(Rational& r1, Rational& r2)
+{
+	Rational r(r1.get_num()*r2.get_denum() + r2.get_num()*r1.get_denum(),
+		r1.get_denum()*r2.get_denum());
+		r.normalize();
+		return r;
+}
+
+
+Rational operator-(Rational& r1, Rational& r2)
+{
+	Rational r(r1.get_num()*r2.get_denum() - r2.get_num()*r1.get_denum(),
+		r1.get_denum()*r2.get_denum());
+	r.normalize();
+	return r;
+}
+
+Rational operator*(Rational& r1, Rational& r2)
+{
+	Rational r(r1.get_num()*r2.get_num(), r1.get_denum()*r2.get_denum());
+	r.normalize();
+	return r;
+}
+
+Rational operator/(Rational& r1, Rational& r2)
+{
+	Rational r(r1.get_num()*r2.get_denum(), r1.get_denum()*r2.get_denum());
+	r.normalize();
+    return r;
+}
+
+
+ostream& operator<< (ostream& os, Rational& r)
+{
+	cout << r.get_num() << "/" << r.get_denum() << endl;
+	return os;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+int gcd(int a, int b)
+{
+	 while (b != 0) {
+        int t = b;
+        b = a%b;
+        a = t;
+    }
+    return a;
+}
+*/
 
 
 
@@ -1414,12 +1565,28 @@ int main()
 	}
 	*/
 
-
+	/*
 	try
 	{
-		Date_unix A(1972, Monthes::Jan, 1);
+		Date_unix A(1972, Monthes::Aug, 1);
 		A.convert_date_to_unix();
 		cout << A.uni_days() << endl;
+	}
+	catch(exception& e)
+	{
+		cerr << "exception: " << e.what() << endl;
+	}
+	*/
+	try
+	{
+		Rational r1;
+		cout << r1;
+		Rational r2(2,5);
+		Rational r3(6,10);
+		cout <<  r2 * r3;
+		cout << r2 / r3;
+		cout << r2 + r3;
+		cout << r2 - r3;
 	}
 	catch(exception& e)
 	{
