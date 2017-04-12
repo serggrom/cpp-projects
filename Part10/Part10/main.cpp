@@ -50,6 +50,23 @@ int get_int(int low, int high)
 
 
 
+int get_int2(int low, int high, const string& greeting, 
+			 const string& sorry)
+{
+	cout << greeting << ": ["<< low << ":" << high << "]" << endl;
+	while (true)
+	{
+		int n = get_int();
+		if(low <= n && n <= high)
+		{
+			return n;
+		}
+		cout << sorry << ": [" << low << ":" << high << "]" << endl;
+	}
+}
+
+
+
 int main()
 {
 	/*
@@ -141,6 +158,7 @@ int main()
 
 
 }
+
 
 
 
